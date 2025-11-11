@@ -1,0 +1,16 @@
+database:
+  host: localhost
+  port: 5432
+  user: gmdb_user
+  password: gmdb_pass
+  dbname: gmdb_db
+  sslmode: disable
+
+server:
+  port: 8080
+  host: localhost
+
+app:
+  name: GMDB
+  version: 1.0.0
+  environment: development

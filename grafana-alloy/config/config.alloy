@@ -1,0 +1,46 @@
+local.file "identifier" {
+  filename = "config/identifier"
+}
+
+discovery.docker "orbstack" {
+  host = "unix:///Users/liguanghui/.orbstack/run/docker.sock"
+}
+
+loki.source.docker "docker_logs" {
+  host = "unix:///Users/liguanghui/.orbstack/run/docker.sock"
+  targets    = discovery.docker.orbstack.targets
+  labels     = {"application" = local.file.identifier.content}
+  forward_to = [loki.write.local_loki.receiver]
+}
+
+prometheus.exporter.unix "local_system" { }
+prometheus.exporter.self "local_alloy" { }
+
+prometheus.scrape "alloy_as_scraper" {
+  targets = array.concat(
+    discovery.docker.orbstack.targets,
+    prometheus.exporter.unix.local_system.targets,
+    prometheus.exporter.self.local_alloy.targets,
+  )
+  forward_to = [prometheus.remote_write.local_prometheus.receiver]
+  scrape_interval = "10s"
+  scrape_timeout = "10s"
+}
+
+prometheus.remote_write "local_prometheus" {
+  external_labels = {
+    application = local.file.identifier.content,
+    cluster     = "orbstack",
+    env         = "dev",
+    owner       = "IT application engineer",
+  }
+  endpoint {
+    url = "http://localhost:9090/api/v1/write"
+  }
+}
+
+loki.write "local_loki" {
+  endpoint {
+    url = "http://localhost:3100/loki/api/v1/push"
+  }
+}

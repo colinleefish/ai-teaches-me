@@ -1,0 +1,33 @@
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "add_container_info" {
+  targets = []
+  rule {
+    source_labels = ["__meta_docker_container_id"]
+    target_label = "container_id"
+    regex = "/(.*)"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex = "/(.*)"
+    target_label = "container_name"
+  }
+}
+
+loki.source.docker "default" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.containers.targets
+  labels     = {
+    "host" 	    = "uc-starlink-dev-all-in-one",
+  }
+  relabel_rules = discovery.relabel.add_container_info.rules
+  forward_to = [loki.write.loki_starlink.receiver]
+}
+
+loki.write "loki_starlink" {
+  endpoint {
+    url = "http://10.9.94.63:3100/loki/api/v1/push"
+  }
+}
