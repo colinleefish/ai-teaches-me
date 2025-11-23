@@ -27,3 +27,10 @@ Telemetry pipeline configuration and observability:
 - Prometheus integration
 - Docker deployment setup
 
+### 6.5840 Distributed Systems (Winter 2025)
+MIT's graduate-level course on distributed systems:
+- MapReduce, RPC, fault tolerance, consensus (Raft)
+- Distributed storage (GFS, Spanner) and transactions
+- Production systems from Google, Amazon, Facebook
+- Labs implementing real distributed algorithms
+
