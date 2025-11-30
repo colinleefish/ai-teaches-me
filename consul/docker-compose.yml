@@ -1,0 +1,147 @@
+version: '3.8'
+
+networks:
+  consul-network:
+    driver: bridge
+
+services:
+  consul-server1:
+    image: hashicorp/consul:latest
+    container_name: consul-server1
+    hostname: consul-server1
+    networks:
+      - consul-network
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+      - "8300:8300"
+    volumes:
+      - ./data/consul-server1:/consul/data
+      - ./config/consul-server1:/consul/config
+    command: >
+      agent -server -ui
+      -bootstrap-expect=3
+      -node=consul-server1
+      -bind=0.0.0.0
+      -client=0.0.0.0
+      -retry-join=consul-server2
+      -retry-join=consul-server3
+      -datacenter=dc1
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+
+  consul-server2:
+    image: hashicorp/consul:latest
+    container_name: consul-server2
+    hostname: consul-server2
+    networks:
+      - consul-network
+    ports:
+      - "8501:8500"
+    volumes:
+      - ./data/consul-server2:/consul/data
+      - ./config/consul-server2:/consul/config
+    command: >
+      agent -server
+      -bootstrap-expect=3
+      -node=consul-server2
+      -bind=0.0.0.0
+      -client=0.0.0.0
+      -retry-join=consul-server1
+      -retry-join=consul-server3
+      -datacenter=dc1
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    depends_on:
+      - consul-server1
+
+  consul-server3:
+    image: hashicorp/consul:latest
+    container_name: consul-server3
+    hostname: consul-server3
+    networks:
+      - consul-network
+    ports:
+      - "8502:8500"
+    volumes:
+      - ./data/consul-server3:/consul/data
+      - ./config/consul-server3:/consul/config
+    command: >
+      agent -server
+      -bootstrap-expect=3
+      -node=consul-server3
+      -bind=0.0.0.0
+      -client=0.0.0.0
+      -retry-join=consul-server1
+      -retry-join=consul-server2
+      -datacenter=dc1
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    depends_on:
+      - consul-server1
+
+  # Example client agent
+  consul-client1:
+    image: hashicorp/consul:latest
+    container_name: consul-client1
+    hostname: consul-client1
+    networks:
+      - consul-network
+    ports:
+      - "8503:8500"
+    volumes:
+      - ./data/consul-client1:/consul/data
+      - ./config/consul-client1:/consul/config
+    command: >
+      agent
+      -node=consul-client1
+      -bind=0.0.0.0
+      -client=0.0.0.0
+      -retry-join=consul-server1
+      -datacenter=dc1
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    depends_on:
+      - consul-server1
+      - consul-server2
+      - consul-server3
+
+  # Prometheus for metrics monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: consul-prometheus
+    networks:
+      - consul-network
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: consul-grafana
+    networks:
+      - consul-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:
+  grafana-data:
+

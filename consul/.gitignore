@@ -1,0 +1,29 @@
+# Consul data directories
+data/
+logs/
+config/
+
+# Docker volumes
+*.snap
+
+# Backup files
+backup*.snap
+*backup.json
+
+# Debug bundles
+debug.tar.gz
+consul-debug-*/
+
+# Environment files
+.env
+*.env
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
