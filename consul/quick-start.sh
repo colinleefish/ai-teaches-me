@@ -88,3 +88,4 @@ echo "  docker-compose down"
 echo ""
 echo -e "${YELLOW}For more examples, check the notes/ directory!${NC}"
 
+

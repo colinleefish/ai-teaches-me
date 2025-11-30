@@ -420,3 +420,4 @@ curl http://localhost:8500/v1/catalog/service/web?tag=production
 6. **DNS caching**: Be aware of DNS TTLs when using DNS interface
 7. **Metadata**: Use service metadata for additional context without affecting queries
 
+

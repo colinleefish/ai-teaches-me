@@ -211,3 +211,4 @@ consul intention check web api
 | Platform Agnostic | ✓ | - | K8s only | JVM only |
 | DNS Interface | ✓ | ✓ | - | - |
 
+

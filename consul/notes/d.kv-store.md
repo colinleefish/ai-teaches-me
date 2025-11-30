@@ -480,3 +480,4 @@ export REDIS_URL="redis://$REDIS"
 | Max Value Size | 512KB | 1MB | 512MB | 1MB |
 | Use Case | Service config | K8s backend | Cache/queue | Coordination |
 
+
