@@ -1,8 +1,16 @@
-version: '3.8'
-
 networks:
   consul-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  consul-binary:
+
 
 services:
   consul-server1:
@@ -10,23 +18,24 @@ services:
     container_name: consul-server1
     hostname: consul-server1
     networks:
-      - consul-network
+      consul-network:
+        ipv4_address: 172.20.0.2
     ports:
       - "8500:8500"
       - "8600:8600/udp"
+      - "8600:8600/tcp"
       - "8300:8300"
     volumes:
       - ./data/consul-server1:/consul/data
       - ./config/consul-server1:/consul/config
     command: >
-      agent -server -ui
-      -bootstrap-expect=3
-      -node=consul-server1
-      -bind=0.0.0.0
-      -client=0.0.0.0
-      -retry-join=consul-server2
-      -retry-join=consul-server3
+      agent -server -ui -bootstrap-expect=3 -node=consul-server1 
+      -bind=0.0.0.0 -client=0.0.0.0 
+      -retry-join=consul-server2 -retry-join=consul-server3 
       -datacenter=dc1
+      -recursor=8.8.8.8
+      -hcl='connect { enabled = true }'
+      -hcl='ports { grpc = 8502 }'
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
@@ -43,14 +52,12 @@ services:
       - ./data/consul-server2:/consul/data
       - ./config/consul-server2:/consul/config
     command: >
-      agent -server
-      -bootstrap-expect=3
-      -node=consul-server2
-      -bind=0.0.0.0
-      -client=0.0.0.0
-      -retry-join=consul-server1
-      -retry-join=consul-server3
+      agent -server -bootstrap-expect=3 -node=consul-server2 
+      -bind=0.0.0.0 -client=0.0.0.0 
+      -retry-join=consul-server1 -retry-join=consul-server3 
       -datacenter=dc1
+      -hcl='connect { enabled = true }'
+      -hcl='ports { grpc = 8502 }'
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
@@ -69,14 +76,12 @@ services:
       - ./data/consul-server3:/consul/data
       - ./config/consul-server3:/consul/config
     command: >
-      agent -server
-      -bootstrap-expect=3
-      -node=consul-server3
-      -bind=0.0.0.0
-      -client=0.0.0.0
-      -retry-join=consul-server1
-      -retry-join=consul-server2
+      agent -server -bootstrap-expect=3 -node=consul-server3 
+      -bind=0.0.0.0 -client=0.0.0.0 
+      -retry-join=consul-server1 -retry-join=consul-server2 
       -datacenter=dc1
+      -hcl='connect { enabled = true }'
+      -hcl='ports { grpc = 8502 }'
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
@@ -92,16 +97,17 @@ services:
       - consul-network
     ports:
       - "8503:8500"
+      - "8504:8502"
     volumes:
       - ./data/consul-client1:/consul/data
       - ./config/consul-client1:/consul/config
     command: >
-      agent
-      -node=consul-client1
-      -bind=0.0.0.0
-      -client=0.0.0.0
-      -retry-join=consul-server1
+      agent -node=consul-client1 
+      -bind=0.0.0.0 -client=0.0.0.0 
+      -retry-join=consul-server1 
       -datacenter=dc1
+      -hcl='connect { enabled = true }'
+      -hcl='ports { grpc = 8502 }'
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
@@ -119,11 +125,43 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    depends_on:
+      - consul-client1
+
+  # Envoy sidecar for Prometheus  
+  prometheus-sidecar:
+    image: envoyproxy/envoy:distroless-v1.32-latest
+    container_name: prometheus-sidecar
+    network_mode: "container:consul-prometheus"
+    environment:
+      - CONSUL_HTTP_ADDR=http://consul-client1:8500
+      - CONSUL_GRPC_ADDR=consul-client1:8502
+    volumes:
+      - consul-binary:/consul-bin:ro
+    entrypoint: ["/consul-bin/consul"]
+    command:
+      - "connect"
+      - "envoy"
+      - "-sidecar-for"
+      - "prometheus"
+      - "-grpc-addr=consul-client1:8502"
+      - "-http-addr=consul-client1:8500"
+      - "-admin-bind=0.0.0.0:19000"
+      - "-ignore-envoy-compatibility"
+    depends_on:
+      consul-binary-init:
+        condition: service_completed_successfully
+      prometheus:
+        condition: service_started
+      consul-client1:
+        condition: service_started
 
   # Grafana for visualization
   grafana:
@@ -139,9 +177,66 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
-      - prometheus
+      - consul-client1
 
-volumes:
-  prometheus-data:
-  grafana-data:
+  # Envoy sidecar for Grafana
+  grafana-sidecar:
+    image: envoyproxy/envoy:distroless-v1.32-latest
+    container_name: grafana-sidecar
+    network_mode: "container:consul-grafana"
+    environment:
+      - CONSUL_HTTP_ADDR=http://consul-client1:8500
+      - CONSUL_GRPC_ADDR=consul-client1:8502
+    volumes:
+      - consul-binary:/consul-bin:ro
+    entrypoint: ["/consul-bin/consul"]
+    command:
+      - "connect"
+      - "envoy"
+      - "-sidecar-for"
+      - "grafana"
+      - "-grpc-addr=consul-client1:8502"
+      - "-http-addr=consul-client1:8500"
+      - "-admin-bind=0.0.0.0:19001"
+      - "-ignore-envoy-compatibility"
+    depends_on:
+      consul-binary-init:
+        condition: service_completed_successfully
+      grafana:
+        condition: service_started
+      consul-client1:
+        condition: service_started
+  
+  # Helper to copy consul binary to shared volume
+  consul-binary-init:
+    image: hashicorp/consul:latest
+    container_name: consul-binary-init
+    volumes:
+      - consul-binary:/consul-bin
+    command: sh -c "cp /bin/consul /consul-bin/ && chmod +x /consul-bin/consul && sync && echo 'Consul binary copied successfully'"
+    restart: "no"
 
+configs:
+  prometheus_config:
+    content: |
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+
+      scrape_configs:
+        - job_name: 'consul'
+          consul_sd_configs:
+            - server: 'consul-server1:8500'
+          relabel_configs:
+            - source_labels: [__meta_consul_service]
+              target_label: job
+
+        - job_name: 'consul-metrics'
+          metrics_path: '/v1/agent/metrics'
+          params:
+            format: ['prometheus']
+          static_configs:
+            - targets: 
+              - 'consul-server1:8500'
+              - 'consul-server2:8500'
+              - 'consul-server3:8500'

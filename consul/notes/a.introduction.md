@@ -87,12 +87,14 @@ With Consul Service Mesh:
 ### Server vs Client Agents
 
 **Server Agents:**
+
 - Maintain cluster state (Raft consensus)
 - Handle queries and persist data
 - Elect a leader
 - Typically 3-5 servers per datacenter
 
 **Client Agents:**
+
 - Forward requests to servers
 - Run health checks
 - Register local services
@@ -201,14 +203,12 @@ consul intention check web api
 
 ## Consul vs Alternatives
 
-| Feature | Consul | Kubernetes | Istio | Eureka |
-|---------|--------|------------|-------|--------|
-| Service Discovery | ✓ | ✓ | ✓ | ✓ |
-| Health Checks | ✓ | ✓ | ✓ | ✓ |
-| Service Mesh | ✓ | - | ✓ | - |
-| Multi-DC | ✓ Native | Complex | Limited | - |
-| KV Store | ✓ | ✓ (etcd) | - | - |
-| Platform Agnostic | ✓ | - | K8s only | JVM only |
-| DNS Interface | ✓ | ✓ | - | - |
-
-
+| Feature           | Consul   | Kubernetes | Istio    | Eureka   |
+| ----------------- | -------- | ---------- | -------- | -------- |
+| Service Discovery | ✓        | ✓          | ✓        | ✓        |
+| Health Checks     | ✓        | ✓          | ✓        | ✓        |
+| Service Mesh      | ✓        | -          | ✓        | -        |
+| Multi-DC          | ✓ Native | Complex    | Limited  | -        |
+| KV Store          | ✓        | ✓ (etcd)   | -        | -        |
+| Platform Agnostic | ✓        | -          | K8s only | JVM only |
+| DNS Interface     | ✓        | ✓          | -        | -        |
