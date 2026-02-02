@@ -1,0 +1,14 @@
+[project]
+name = "simple-app"
+version = "0.1.0"
+description = "Simple demo app for UV exercises"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+hello = "main:main"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+]
