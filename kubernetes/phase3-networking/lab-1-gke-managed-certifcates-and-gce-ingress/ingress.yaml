@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-whoami-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/managed-certificates: traefik-whoami-gcp-xy678-vip-managed-cert
+    networking.gke.io/v1beta1.FrontendConfig: http-to-https
+spec:
+  rules:
+    - host: "traefik-whoami.gcp.xy678.vip"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik-whoami-service
+                port:
+                  number: 80

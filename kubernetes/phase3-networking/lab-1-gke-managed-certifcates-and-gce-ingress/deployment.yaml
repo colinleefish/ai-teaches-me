@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-whoami
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: traefik-whoami
+  template:
+    metadata:
+      labels:
+        app: traefik-whoami
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: traefik-whoami
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: traefik-whoami
+          image: traefik/whoami
+          env:
+            - name: WHOAMI_NAME
+              value: "starorigin"
+            - name: WHOAMI_PORT_NUMBER
+              value: "2001"
+          ports:
+            - name: http
+              containerPort: 2001
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 2001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 2001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
+            successThreshold: 2

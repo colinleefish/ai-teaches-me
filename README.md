@@ -27,6 +27,23 @@ Telemetry pipeline configuration and observability:
 - Prometheus integration
 - Docker deployment setup
 
+### Kubernetes (Spring 2026)
+Operational Kubernetes for SREs — scheduling, availability, networking, and security:
+- Scheduling, affinity, taints, topology spread
+- PodDisruptionBudgets, rolling updates, probes
+- Networking, ingress, network policies
+- RBAC, Workload Identity, secrets management
+- Resource management, HPA/VPA, cost optimization
+- Observability and debugging patterns
+
+### Helm (Spring 2026)
+Kubernetes package manager — chart authoring, templating, and release lifecycle:
+- Charts, templates, and Go template functions
+- Values layering and schema validation
+- Dependencies, subcharts, and library charts
+- Hooks, tests, and release lifecycle
+- Packaging, OCI registries, and CI/CD patterns
+
 ### 6.5840 Distributed Systems (Winter 2025)
 MIT's graduate-level course on distributed systems:
 - MapReduce, RPC, fault tolerance, consensus (Raft)

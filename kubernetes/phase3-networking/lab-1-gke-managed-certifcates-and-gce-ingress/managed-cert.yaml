@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: traefik-whoami-gcp-xy678-vip-managed-cert
+spec:
+  domains:
+    - "traefik-whoami.gcp.xy678.vip"
