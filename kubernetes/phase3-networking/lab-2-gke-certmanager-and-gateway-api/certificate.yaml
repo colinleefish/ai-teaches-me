@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gateway-whoami-cert
+  namespace: gateway-whoami
+spec:
+  secretName: gateway-whoami-cert-secret
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+    - "gateway-whoami.gcp.xy678.vip"

@@ -528,6 +528,13 @@ kubectl delete namespace netpol-lab
 
 ---
 
+## Labs
+
+- [x] **Lab 1: GKE GCE Ingress + ManagedCertificate** — GKE 专有方案，使用 Ingress + ManagedCertificate + FrontendConfig 实现 HTTPS 暴露和 HTTP→HTTPS 跳转。[详情](./lab-1-gke-managed-certifcates-and-gce-ingress/README.md)
+- [x] **Lab 2: Gateway API + cert-manager** — 厂商中立方案，使用 Gateway API + cert-manager（Let's Encrypt DNS-01）+ Workload Identity 实现相同效果。涉及 GKE Metadata Server、ACME 协议、KSA↔GCP SA 身份绑定等深度话题。[详情](./lab-2-gke-certmanager-and-gateway-api/README.md)
+
+---
+
 ## Key Takeaways
 
 1. **Pod IPs are real** — on VPC-native GKE, pods are first-class network citizens

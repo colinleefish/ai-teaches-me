@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-whoami-gateway
+  namespace: gateway-whoami
+spec:
+  gatewayClassName: gke-l7-global-external-managed
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: "gateway-whoami.gcp.xy678.vip"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: gateway-whoami-cert-secret
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "gateway-whoami.gcp.xy678.vip"
