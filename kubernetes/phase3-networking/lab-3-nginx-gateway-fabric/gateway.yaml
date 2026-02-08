@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ngf-whoami-gateway
+  namespace: ngf-whoami
+spec:
+  gatewayClassName: "nginx"
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: "ngf-whoami.gcp.xy678.vip"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: ngf-whoami-cert-secret
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "ngf-whoami.gcp.xy678.vip"
