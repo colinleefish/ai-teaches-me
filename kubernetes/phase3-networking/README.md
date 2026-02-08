@@ -532,6 +532,7 @@ kubectl delete namespace netpol-lab
 
 - [x] **Lab 1: GKE GCE Ingress + ManagedCertificate** — GKE 专有方案，使用 Ingress + ManagedCertificate + FrontendConfig 实现 HTTPS 暴露和 HTTP→HTTPS 跳转。[详情](./lab-1-gke-managed-certifcates-and-gce-ingress/README.md)
 - [x] **Lab 2: Gateway API + cert-manager** — 厂商中立方案，使用 Gateway API + cert-manager（Let's Encrypt DNS-01）+ Workload Identity 实现相同效果。涉及 GKE Metadata Server、ACME 协议、KSA↔GCP SA 身份绑定等深度话题。[详情](./lab-2-gke-certmanager-and-gateway-api/README.md)
+- [x] **Lab 3: NGINX Gateway Fabric** — 自建数据面方案，使用 NGINX Gateway Fabric 替代 GKE 内置 Gateway 控制器。云 LB 退化为 L4 入口，TLS 终止和 L7 路由全部在集群内 NGINX Pod 完成。[详情](./lab-3-nginx-gateway-fabric/README.md)
 
 ---
 
