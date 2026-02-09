@@ -3,6 +3,7 @@
 A comprehensive guide to UV, the extremely fast Python package installer and resolver written in Rust by Astral (creators of Ruff).
 
 ## Table of Contents
+
 1. [What is UV?](#what-is-uv)
 2. [Installation](#installation)
 3. [Core Concepts](#core-concepts)
@@ -18,11 +19,13 @@ A comprehensive guide to UV, the extremely fast Python package installer and res
 ## What is UV?
 
 UV is a **10-100x faster** alternative to pip and pip-tools, designed to:
+
 - Replace pip, pip-tools, pipx, poetry, pyenv, virtualenv
 - Provide a unified interface for Python package and project management
 - Offer resolution speeds comparable to modern JavaScript/Rust package managers
 
 ### Key Features
+
 - ⚡ **Blazingly fast** - written in Rust, 10-100x faster than pip
 - 🔒 **Lockfiles** - reproducible dependencies via `uv.lock`
 - 🐍 **Python version management** - download and manage Python installations
@@ -34,26 +37,31 @@ UV is a **10-100x faster** alternative to pip and pip-tools, designed to:
 ## Installation
 
 ### macOS/Linux
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### Windows
+
 ```powershell
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 ### Via Homebrew
+
 ```bash
 brew install uv
 ```
 
 ### Via pip (not recommended)
+
 ```bash
 pip install uv
 ```
 
 ### Verify installation
+
 ```bash
 uv --version
 ```
@@ -63,7 +71,9 @@ uv --version
 ## Core Concepts
 
 ### 1. Virtual Environments
+
 UV automatically manages virtual environments:
+
 ```bash
 # Create venv
 uv venv
@@ -73,10 +83,13 @@ uv venv --python 3.12
 ```
 
 ### 2. Dependencies
+
 UV uses `pyproject.toml` for dependency specification and generates `uv.lock` for reproducibility.
 
 ### 3. Python Version Management
+
 UV can install and manage Python versions:
+
 ```bash
 # List available Python versions
 uv python list
@@ -259,6 +272,7 @@ my-cli = "my_project.cli:main"
 ```
 
 Run with:
+
 ```bash
 uv run my-cli
 ```
@@ -272,6 +286,7 @@ members = ["packages/*"]
 ```
 
 Structure:
+
 ```
 workspace/
 ├── pyproject.toml
@@ -326,6 +341,7 @@ uv pip install -r requirements.txt
 ### 1. Use Lockfiles
 
 Always commit `uv.lock` for reproducible builds:
+
 ```bash
 # Generate lockfile
 uv lock
@@ -355,6 +371,7 @@ dev = [
 ```
 
 Install with:
+
 ```bash
 uv sync --extra dev
 ```
@@ -393,17 +410,17 @@ CMD ["uv", "run", "python", "app.py"]
 
 ## Common Commands Cheat Sheet
 
-| Task | UV Command | Equivalent |
-|------|------------|------------|
-| Create venv | `uv venv` | `python -m venv` |
-| Install package | `uv pip install pkg` | `pip install pkg` |
+| Task              | UV Command                           | Equivalent                        |
+| ----------------- | ------------------------------------ | --------------------------------- |
+| Create venv       | `uv venv`                            | `python -m venv`                  |
+| Install package   | `uv pip install pkg`                 | `pip install pkg`                 |
 | Install from file | `uv pip install -r requirements.txt` | `pip install -r requirements.txt` |
-| Add dependency | `uv add pkg` | `poetry add pkg` |
-| Lock dependencies | `uv lock` | `poetry lock` |
-| Sync environment | `uv sync` | `poetry install` |
-| Run command | `uv run python script.py` | `poetry run python script.py` |
-| Install tool | `uv tool install pkg` | `pipx install pkg` |
-| Install Python | `uv python install 3.12` | `pyenv install 3.12` |
+| Add dependency    | `uv add pkg`                         | `poetry add pkg`                  |
+| Lock dependencies | `uv lock`                            | `poetry lock`                     |
+| Sync environment  | `uv sync`                            | `poetry install`                  |
+| Run command       | `uv run python script.py`            | `poetry run python script.py`     |
+| Install tool      | `uv tool install pkg`                | `pipx install pkg`                |
+| Install Python    | `uv python install 3.12`             | `pyenv install 3.12`              |
 
 ---
 
@@ -449,11 +466,13 @@ uv run uvicorn src.main:app --reload
 ## Why UV?
 
 ### Speed Comparison
+
 - **pip**: 10-30 seconds
-- **poetry**: 15-45 seconds  
+- **poetry**: 15-45 seconds
 - **UV**: 0.5-2 seconds
 
 ### Benefits
+
 ✅ Single tool replaces many
 ✅ Faster development workflow
 ✅ Better dependency resolution
@@ -461,6 +480,7 @@ uv run uvicorn src.main:app --reload
 ✅ Compatible with existing Python ecosystem
 
 ### When to Use UV
+
 - ✅ New projects
 - ✅ Want faster CI/CD
 - ✅ Need better dependency management
@@ -468,6 +488,7 @@ uv run uvicorn src.main:app --reload
 - ✅ Want unified Python tooling
 
 ### When to Stick with pip/poetry
+
 - ⚠️ Complex custom build systems
 - ⚠️ Legacy projects with deep pip integration
 - ⚠️ Team not ready to adopt new tools
@@ -481,6 +502,7 @@ Ready to practice? Check out the comprehensive exercise suite:
 ### 📚 [Start Exercises](./exercises/README.md)
 
 **6 Progressive Exercises covering:**
+
 1. ✅ **Basics** - Virtual environments, package installation (30 min)
 2. ✅ **Project Management** - Modern Python projects with lockfiles (45 min)
 3. ✅ **Python Versions** - Multi-version management (30 min)
@@ -489,6 +511,7 @@ Ready to practice? Check out the comprehensive exercise suite:
 6. ✅ **Real-World Integration** - CI/CD, Docker, production (90 min)
 
 **Each exercise includes:**
+
 - 🎯 Clear objectives and step-by-step tasks
 - ✅ Expected results and verification commands
 - 🏆 Challenge tasks for deeper learning
