@@ -6,8 +6,8 @@ How pods land on nodes and how to influence it.
 
 - [ ] How the scheduler works (filtering → scoring → binding)
 - [ ] Node selectors and `nodeAffinity`
-- ✅ Pod affinity and anti-affinity (`podAffinity`, `podAntiAffinity`)
-- ✅ Topology keys (`kubernetes.io/hostname`, `topology.kubernetes.io/zone`)
+- [x] Pod affinity and anti-affinity (`podAffinity`, `podAntiAffinity`)
+- [x] Topology keys (`kubernetes.io/hostname`, `topology.kubernetes.io/zone`)
 - [ ] Topology spread constraints (`topologySpreadConstraints`)
 - [ ] Taints and tolerations
 - [ ] Priority classes and preemption
